@@ -72,4 +72,8 @@
 </main>
 <footer>You have 3 tasks</footer>
 </body>
+<script>
+    $('[required="required"]').prev('label').append( '<span>*</span>').children( 'span').addClass('required');
+    $('tbody tr:even').addClass('even');
+</script>
 </html>
