@@ -3,8 +3,10 @@
 <head>
     <meta charset="utf-8">
     <title>Task list</title>
-    <link rel="stylesheet" type="text/css" href="styles/tasks.css" media="screen" />
-    <script src="scripts/jquery-2.1.4.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="styles/tasks.css"
+          media="screen" />
+    <script src="scripts/jquery-2.0.3.js"></script>
+    <script src="scripts/jquery-tmpl.js"></script>
 </head>
 <body>
 <header>
@@ -14,22 +16,26 @@
     <section id="taskCreation" class="not">
         <form>
             <div>
-                <label>Task</label> <input type="text" required="required"
-                                           name="task" class="large" placeholder="Breakfast at Tiffanys" />
+                <label>Task</label>
+                <input type="text" required="required"
+                       name="task" class="large"
+                       placeholder="Breakfast at Tiffanys" />
             </div>
             <div>
-                <label>Required by</label> <input type="date" required="required"
-                                                  name="requiredBy" />
+                <label>Required by</label>
+                <input type="date" required="required"
+                       name="requiredBy" />
             </div>
             <div>
-                <label>Category</label> <select name="category">
-                <option value="Personal">Personal</option>
-                <option value="Work">Work
-                </option>
-            </select>
+                <label>Category</label>
+                <select name="category">
+                    <option value="Personal">Personal</option>
+                    <option value="Work">Work</option>
+                </select>
             </div>
             <nav>
-                <a href="#">Save task</a> <a href="#">Clear task</a>
+                <a href="#" id="saveTask">Save task</a>
+                <a href="#">Clear task</a>
             </nav>
         </form>
     </section>
@@ -50,42 +56,6 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td>Return library books</td>
-                <td><time datetime="2013-10-14">2013-10-14</time></td>
-                <td>Personal</td>
-                <td>
-                    <nav>
-                        <a href="#" class="editRow">Edit</a>
-                        <a href="#" class="completeRow">Complete</a>
-                        <a href="#" class="deleteRow" >Delete</a>
-                    </nav>
-                </td>
-            </tr>
-            <tr class="even">
-                <td>Perform project demo to stakeholders</td>
-                <td><time datetime="2013-10-14">2013-10-14</time></td>
-                <td>Work</td>
-                <td>
-                    <nav>
-                        <a href="#" class="editRow">Edit</a>
-                        <a href="#" class="completeRow">Complete</a>
-                        <a href="#" class="deleteRow" >Delete</a>
-                    </nav>
-                </td>
-            </tr>
-            <tr>
-                <td>Meet friends for dinner</td>
-                <td><time datetime="2013-10-14">2013-10-14</time></td>
-                <td>Personal</td>
-                <td>
-                    <nav>
-                        <a href="#" class="editRow">Edit</a>
-                        <a href="#" class="completeRow">Complete</a>
-                        <a href="#" class="deleteRow" >Delete</a>
-                    </nav>
-                </td>
-            </tr>
             </tbody>
         </table>
         <nav>
@@ -104,11 +74,16 @@
             $('#taskCreation').removeClass('not');
         });
         $('tbody tr').click(function(evt) {
-            $(evt.target).closest('td').siblings( ).andSelf( ).toggleClass( 'rowHighlight');
+            $(evt.target).closest('td' ).siblings( ).andSelf( ).toggleClass( 'rowHighlight');
         });
         $('#tblTasks tbody').on('click', '.deleteRow', function(evt) {
             evt.preventDefault();
             $(evt.target).parents('tr').remove();
+        });
+        $('#saveTask').click(function(evt) {
+            evt.preventDefault();
+            var task = $('form').toObject();
+            $('#taskRow').tmpl(task).appendTo( $('#tblTasks tbody'));
         });
     });
     (function($) {
@@ -119,8 +94,32 @@
                     result[v.name] = v.value;
                 });
                 return result;
+            },
+            fromObject: function(obj) {
+                $.each(this.find(':input'), function(i,v) {
+                    var name = $(v).attr('name');
+                    if (obj[name]) {
+                        $(v).val(obj[name]);
+                    } else {
+                        $(v).val('');
+                    }
+                });
             }
         });
     })(jQuery);
+</script>
+<script id="taskRow" type="text/x-jQuery-tmpl">
+<tr>
+<td>${task}</td>
+<td><time datetime="${requiredBy}"> ${requiredBy}</time></td>
+<td>${category}</td>
+<td>
+<nav>
+<a href="#">Edit</a>
+<a href="#">Complete</a>
+<a href="#" class="deleteRow">Delete</a>
+</nav>
+</td>
+</tr>
 </script>
 </html>
